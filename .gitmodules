@@ -1,0 +1,3 @@
+[submodule "UserApplication"]
+	path = UserApplication
+	url = https://github.com/shreyas-acharya/UserApplication

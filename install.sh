@@ -10,13 +10,13 @@ check_if_done() {
   if [ $? -eq 0 ]; then
     echo -e "${GREEN}$1${END}"
   else
-    echo -e "${RED}Aborted${END}"
+    echo -e "${RED}Aborted : $2${END}"
     exit 1
   fi  
 }
 
 press_any_key_to_continue() {
-  echo "Press any key to continue..."
+  echo -e "$1"
   read -r -n 1 -s answer
 }
 
@@ -26,7 +26,15 @@ clone_repository() {
   fi
   local repo_link="git@github.com:shreyas-acharya/UserApplication.git"
   git clone $repo_link
-  check_if_done "Cloning successful"
+}
+
+run_Sast() {
+  semgrep --config=auto --output scan_results.json --json UserApplication
+  python /home/shreyasa/Documents/Internship/Tasks/CI-CD-Pipeline/sast_analysis.py
+  if [[ $? -eq 1 ]]; then
+    echo
+    press_any_key_to_continue "${YELLOW}Warnings found!!! press any key to continue${END}"
+  fi
 }
 
 create_env_file() {
@@ -44,27 +52,27 @@ create_env_file() {
   echo -n "Enter database name (Default: user) : "
   read database
   echo "DATABASE=${database:-user}" >> .env
-  check_if_done "Created .env file"
 }
+
+
 
 run_container() {
   sudo docker compose up
   sudo docker compose down
-  check_if_done "Containers removed..."
 }
 
-main() {
-  echo -e "${BOLD}User Management Application${END}test"
-  echo
-  echo -e "${BOLD}Step 1: ${END}Clone git repository"
-  clone_repository
-  echo
-  echo -e "${BOLD}Step 2: ${END}Create .env file"
-  create_env_file
-  echo
-  echo -e "${BOLD}Step 3: ${END}Create and run container"
-  run_container  
-}
+FUNCTIONS=(clone_repository run_Sast create_env_file run_container)
+HEADINGS=("Clone git repository" "Run SAST" "Create .env file" "Create and run container")
+SUCCESS_MESSAGES=("Cloning repository successful" "Scanning complete" "Created .env file" "Containers removed")
+FAILURE_MESSAGES=("" "" "" "")
 
-main
+
+for ((INDEX=0;INDEX<${#FUNCTIONS[@]}; INDEX++))
+do
+  echo
+  echo -e "${BOLD}Step $INDEX: ${HEADINGS[$INDEX]}${END}"
+  ${FUNCTIONS[$INDEX]}
+  check_if_done "${SUCCESS_MESSAGES[$INDEX]}" "${FAILURE_MESSAGES[$INDEX]}"
+  seq -s- $COLUMNS|tr -d '[:digit:]'
+done
 

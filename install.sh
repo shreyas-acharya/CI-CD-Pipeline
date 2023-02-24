@@ -26,6 +26,7 @@ clone_repository() {
   fi
   local repo_link="git@github.com:shreyas-acharya/CI-CD-Pipeline.git"
   git clone $repo_link
+  cd CI-CD-Pipeline
   git submodule update --init --recursive
 }
 

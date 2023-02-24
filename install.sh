@@ -25,14 +25,14 @@ clone_repository() {
     rm -fr CI-CD-Pipeline
   fi
   local repo_link="git@github.com:shreyas-acharya/CI-CD-Pipeline.git"
-  git clone $repo_link
-  cd CI-CD-Pipeline
+  git clone $repo_link &&
+  cd CI-CD-Pipeline &&
   git submodule update --init --recursive
 }
 
 run_sast() {
-  semgrep --config=auto --output scan_results.json --json UserApplication
-  python /home/shreyasa/Documents/Internship/Tasks/CI-CD-Pipeline/sast_analysis.py
+  semgrep --config=auto --output scan_results.json --json UserApplication &&
+  python ./sast_analysis.py
   if [[ $? -eq 1 ]]; then
     echo
     press_any_key_to_continue "${YELLOW}Warnings found!!! press any key to continue${END}"
@@ -49,9 +49,9 @@ api_testing() {
   echo "PASSWORD=test" >> .env
   echo "DATABASE=test" >> .env
   
-  docker compose up
-  python3 api_testing.py
-  docker compose down
+  docker compose up &&
+  python3 api_testing.py &&
+  docker compose down &&
   cd ..
 }
 

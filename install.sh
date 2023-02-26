@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -o errexit
+
 RED="\e[31m"
 YELLOW="\e[33m"
 GREEN="\e[32m"
@@ -20,6 +22,12 @@ press_any_key_to_continue() {
   read -r -n 1 -s answer
 }
 
+create_venv() {
+  python3 -m venv venv
+  pip3 install semgrep
+  source venv/bin/activate
+}
+
 clone_repository() {
   if [[ -d CI-CD-Pipeline ]]; then
     rm -fr CI-CD-Pipeline
@@ -27,6 +35,7 @@ clone_repository() {
   local repo_link="git@github.com:shreyas-acharya/CI-CD-Pipeline.git"
   git clone $repo_link &&
   cd CI-CD-Pipeline &&
+  sleep 3 &&
   git submodule update --init --recursive
 }
 
@@ -78,9 +87,9 @@ run_container() {
 }
 
 FUNCTIONS=(clone_repository run_sast api_testing create_env_file run_container)
-HEADINGS=("Clone git repository" "Run SAST" "API Testing" "Create .env file" "Create and run container")
-SUCCESS_MESSAGES=("Successfully cloned repository" "Scanning completed" "Testing completed" "Created .env file" "Containers removed")
-FAILURE_MESSAGES=("" "" "" "" "")
+HEADINGS=("Create a virtual Environment" "Clone git repository" "Run SAST" "API Testing" "Create .env file" "Create and run container")
+SUCCESS_MESSAGES=("Successfully created and enabled virtual env" "Successfully cloned repository" "Scanning completed" "Testing completed" "Created .env file" "Containers removed")
+FAILURE_MESSAGES=("" "" "" "" "" "")
 
 
 for ((INDEX=0;INDEX<${#FUNCTIONS[@]}; INDEX++))

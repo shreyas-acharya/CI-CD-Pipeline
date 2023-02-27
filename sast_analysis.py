@@ -3,7 +3,7 @@ import sys
 
 
 def analyze():
-    with open("./scan_results.json") as file:
+    with open("./output/semgrep_scan_results.json") as file:
         data = json.load(file)
         files_scanned = len(data["paths"]["scanned"])
         errors = len(data["errors"])

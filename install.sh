@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -o errexit
-
 RED="\e[31m"
 YELLOW="\e[33m"
 GREEN="\e[32m"
@@ -24,8 +22,13 @@ press_any_key_to_continue() {
 
 create_venv() {
   python3 -m venv venv
-  pip3 install semgrep
   source venv/bin/activate
+  pip3 install semgrep
+  pip3 install requests
+}
+
+delete_venv() {
+  rm -r venv/
 }
 
 clone_repository() {
@@ -40,7 +43,10 @@ clone_repository() {
 }
 
 run_sast() {
-  semgrep --config=auto --output scan_results.json --json UserApplication &&
+  if [[ ! -d "output" ]]; then
+    mkdir output
+  fi 
+  semgrep --config=auto --output ./output/semgrep_scan_results.json --json UserApplication &&
   python ./sast_analysis.py
   if [[ $? -eq 1 ]]; then
     echo
@@ -49,47 +55,53 @@ run_sast() {
 }
 
 api_testing() {
-  cd UserApplication
-  if [[ -e .env ]]; then
-    rm .env
+  if [[ -e UserApplication/.env ]]; then
+    rm UserApplication/.env
   fi
-  touch .env
-  echo "USERNAME=test" >> .env
-  echo "PASSWORD=test" >> .env
-  echo "DATABASE=test" >> .env
+  touch UserApplication/.env
+  echo "USERNAME=test" >> UserApplication/.env
+  echo "PASSWORD=test" >> UserApplication/.env
+  echo "DATABASE=test" >> UserApplication/.env
   
-  docker compose up &&
-  python3 api_testing.py &&
-  docker compose down &&
-  cd ..
+  sudo docker compose -f ./UserApplication/docker-compose.yml up --detach &&
+  sleep 3 &&
+  python3 ./api_testing.py &&
+  sudo docker compose -f ./UserApplication/docker-compose.yml down
+}
+
+trivy_scanning() {
+  wget https://github.com/aquasecurity/trivy/releases/download/v0.37.3/trivy_0.37.3_Linux-64bit.deb
+  sudo dpkg -i trivy_0.37.3_Linux-64bit.deb
+  rm -r trivy_0.37.3_Linux-64bit.deb
+  sudo trivy --format json --output ./output/trivy_scan_results.json image userapplication-fastapi
+  python3 ./trivy_scanning.py
 }
 
 create_env_file() {
-  cd UserApplication
-  if [[ -e .env ]]; then
-    rm .env
+  if [[ -e ./UserApplication/.env ]]; then
+    rm ./UserApplication/.env
   fi
-  touch .env  
+  touch ./UserApplication/.env  
   echo -n "Enter a username (Default: root) : "
   read username
-  echo "USERNAME=${username:-root}" >> .env
+  echo "USERNAME=${username:-root}" >> ./UserApplication/.env
   echo -n "Enter a password (Default: root) : "
   read password
-  echo "PASSWORD=${password:-root}" >> .env
+  echo "PASSWORD=${password:-root}" >> ./UserApplication/.env
   echo -n "Enter database name (Default: user) : "
   read database
-  echo "DATABASE=${database:-user}" >> .env
+  echo "DATABASE=${database:-user}" >> ./UserApplication/.env
 }
 
 run_container() {
-  sudo docker compose up
-  sudo docker compose down
+  sudo docker compose -f ./UserApplication/docker-compose.yml -f ./UserApplication/docker-compose-production.yml up
+  sudo docker compose -f ./UserApplication/docker-compose.yml -f ./UserApplication/docker-compose-production.yml down
 }
 
-FUNCTIONS=(clone_repository run_sast api_testing create_env_file run_container)
-HEADINGS=("Create a virtual Environment" "Clone git repository" "Run SAST" "API Testing" "Create .env file" "Create and run container")
-SUCCESS_MESSAGES=("Successfully created and enabled virtual env" "Successfully cloned repository" "Scanning completed" "Testing completed" "Created .env file" "Containers removed")
-FAILURE_MESSAGES=("" "" "" "" "" "")
+FUNCTIONS=(create_venv clone_repository run_sast api_testing trivy_scanning create_env_file run_container delete_venv)
+HEADINGS=("Create a virtual Environment" "Clone git repository" "Run SAST" "API Testing" "Trivy Scanning" "Create .env file" "Create and run container" "Delete virtual environment")
+SUCCESS_MESSAGES=("Successfully created and enabled virtual env" "Successfully cloned repository" "SAST Scanning completed" "Testing completed" "Trivy Scanning completed" "Created .env file" "Containers removed" "Successfully deleted virtual env")
+FAILURE_MESSAGES=("" "" "" "" "" "" "" "")
 
 
 for ((INDEX=0;INDEX<${#FUNCTIONS[@]}; INDEX++))

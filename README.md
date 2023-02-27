@@ -3,12 +3,12 @@
 ## What is CI/CD pipeline?
 A pipeline is a process that drives software development through a path of building, testing, and deploying code, also known as CI/CD. By automating the process, the objective is to minimize human error and maintain a consistent process for how software is released. Tools that are included in the pipeline could include compiling code, unit tests, code analysis, security, and binaries creation. For containerized environments, this pipeline would also include packaging the code into a container image to be deployed across a hybrid cloud.    
 
-![CI CD Pipeline](https://www.redhat.com/cms/managed-files/styles/wysiwyg_full_width/s3/ci-cd-flow-desktop_0.png?itok=QgBYmjA2) 
+![CI CD Pipeline](https://javamaster.it/wp-content/uploads/2021/04/cicd.png) 
 
 ## Installation Steps:
 ### Step 1:
 Create a .env file with the following fields:   
-```json
+```
 JIRA_EMAIL=<jira_email>
 JIRA_TOKEN=<jira_API_token>
 JIRA_SERVER=<jira_server_url>

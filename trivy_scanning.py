@@ -82,7 +82,10 @@ def __raise_issues(findings):
                     "project": {"key": "CCP"},
                 }
             )
-    connection.create_issues(field_list=issues)
+    if len(issues) == 0:
+        print("No issues found")
+    else:
+        connection.create_issues(field_list=issues)
 
 def main():
     findings = __parse_findings()

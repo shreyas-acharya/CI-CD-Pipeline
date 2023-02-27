@@ -9,9 +9,9 @@ A pipeline is a process that drives software development through a path of build
 ### Step 1:
 Create a .env file with the following fields:   
 ```json
-JIRA_EMAIL=
-JIRA_TOKEN=
-JIRA_SERVER=
+JIRA_EMAIL=<jira_email>
+JIRA_TOKEN=<jira_API_token>
+JIRA_SERVER=<jira_server_url>
 ```
 ### Step 2:
 Run the following command:   
@@ -21,7 +21,7 @@ Run the following command:
 
 ## Stages:
 #### Stage 1: Virtual Environment
-Creating and enabling [Virtual environment](https://docs.python.org/3/library/venv.html)
+Creating and enabling [Virtual environment](https://docs.python.org/3/library/venv.html).   
 List of modules installed:    
 - [Semgrep](https://semgrep.dev/) : a static application security testing tool
 - [Requests](https://pypi.org/project/requests/) : HTTP library for python
@@ -29,7 +29,7 @@ List of modules installed:
 - [Python-dotenv](https://pypi.org/project/python-dotenv/) :  Python library to read key-value pairs from a .env file and set then as environment variables
 
 #### Stage 2: Cloning Repository
-Cloning the repository and updating the [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules), User Application.
+Cloning the repository and updating the [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules), User Application.   
 
 #### Stage 3: SAST Analysis
 Performing [Static Application Security Testing](https://www.synopsys.com/glossary/what-is-sast.html). SAST or static analysis, is a testing methodology that analyzes source code to find security vulnerabilities that make your organization’s applications susceptible to attack. It scans an application before the code is compiled. It’s also known as white box testing. The python library used for SAST testing was [Semgrep](https://semgrep.dev/).    

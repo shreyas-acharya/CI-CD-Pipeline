@@ -88,7 +88,7 @@ def main():
     print("Test Successful\n")
 
     print(f"Testing endpoint: {BASE_URL}/login")
-    login(username="testx", password="testx", expected="User doesn't exits")
+    login(username="testx", password="testx", expected="User doesn't exists")
     login(username="testa", password="testx", expected="Incorrect password")
     login(username="testa", password="testa", expected="Login Successful : testa")
     login(

@@ -26,10 +26,12 @@ create_venv() {
   pip3 install semgrep
   pip3 install requests
   pip3 install jira
+  pip3 install python-dotenv
 }
 
 delete_venv() {
-  rm -r venv/
+  deactivate
+  rm -r ../venv/
 }
 
 clone_repository() {

@@ -5,8 +5,6 @@ BASE_URL = "http://0.0.0.0:8000"
 
 
 def check_validity(response, expected):
-    print(response.json())
-    print(expected)
     if "status_code" in response.json():
         if response.json()["detail"] != expected:
             sys.exit(2)

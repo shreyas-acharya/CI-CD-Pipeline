@@ -25,6 +25,7 @@ create_venv() {
   source venv/bin/activate
   pip3 install semgrep
   pip3 install requests
+  pip3 install jira
 }
 
 delete_venv() {

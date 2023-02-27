@@ -1,10 +1,11 @@
 from jira import JIRA
 from dotenv import load_dotenv
+from pathlib import Path
 from pprint import pprint
 import os
 import json
 
-load_dotenv()
+load_dotenv(dotenv_path=Path("../.env"))
 
 JIRA_EMAIL = os.getenv("JIRA_EMAIL")
 JIRA_TOKEN = os.getenv("JIRA_TOKEN")
@@ -15,7 +16,7 @@ connection = JIRA(basic_auth=(JIRA_EMAIL, JIRA_TOKEN), server=JIRA_SERVER)
 
 def __parse_findings():
     findings = []
-    with open("./sample.json", "r") as f:
+    with open("./output/trivy_scan_results.json", "r") as f:
         results = json.loads(f.read())
 
     resource_type = "container-image"

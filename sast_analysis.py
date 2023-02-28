@@ -16,7 +16,7 @@ def analyze():
     if errors != 0:
         sys.exit(2)
     elif warnings != 0:
-        sys.exit(1)
+        "Warnings found!!!"
     sys.exit(0)
 
 

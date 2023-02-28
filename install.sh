@@ -1,10 +1,16 @@
-#!/bin/bash
+#!/bin/bash -e
 
 RED="\e[31m"
 YELLOW="\e[33m"
 GREEN="\e[32m"
 END="\e[0m"
 BOLD="\e[1m"
+
+clean_up() {
+  delete_venv
+  sudo docker compose -f ./UserApplication/docker-compose.yml down
+  sudo docker compose -f ./UserApplication/docker-compose.yml -f ./UserApplication/docker-compose-production.yml down
+}
 
 check_if_done() {
   if [ $? -eq 0 ]; then
@@ -110,6 +116,7 @@ SUCCESS_MESSAGES=("Successfully created and enabled virtual env" "Successfully c
 FAILURE_MESSAGES=("" "" "" "" "" "" "" "")
 
 
+trap clean_up EXIT
 for ((INDEX=0;INDEX<${#FUNCTIONS[@]}; INDEX++))
 do
   echo

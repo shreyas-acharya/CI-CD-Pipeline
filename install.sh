@@ -112,9 +112,9 @@ run_container() {
 }
 
 FUNCTIONS=(create_venv clone_repository run_sast api_testing trivy_scanning create_env_file run_container)
-HEADINGS=("Create a virtual Environment" "Clone git repository" "Run SAST" "API Testing" "Trivy Scanning" "Create .env file" "Create and run container" "Clean up")
-SUCCESS_MESSAGES=("Successfully created and enabled virtual env" "Successfully cloned repository" "SAST Scanning completed" "Testing completed" "Trivy Scanning completed" "Created .env file" "Containers removed" "Clean Up Successful")
-FAILURE_MESSAGES=("" "" "" "" "" "" "" "")
+HEADINGS=("Create a virtual Environment" "Clone git repository" "Run SAST" "API Testing" "Trivy Scanning" "Create .env file" "Create and run container")
+SUCCESS_MESSAGES=("Successfully created and enabled virtual env" "Successfully cloned repository" "SAST Scanning completed" "Testing completed" "Trivy Scanning completed" "Created .env file" "Containers removed")
+FAILURE_MESSAGES=("" "" "" "" "" "" "")
 
 
 trap clean_up EXIT

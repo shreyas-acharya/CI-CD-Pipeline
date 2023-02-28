@@ -85,6 +85,7 @@ def __raise_issues(findings):
     if len(issues) == 0:
         print("No issues found")
     else:
+        print(f"{len(issues)} issues found!!!\nRaising issues on Jira...")
         connection.create_issues(field_list=issues)
 
 def main():

@@ -73,9 +73,12 @@ api_testing() {
 }
 
 trivy_scanning() {
-  wget https://github.com/aquasecurity/trivy/releases/download/v0.37.3/trivy_0.37.3_Linux-64bit.deb
-  sudo dpkg -i trivy_0.37.3_Linux-64bit.deb
-  rm -r trivy_0.37.3_Linux-64bit.deb
+  which trivy > /dev/null 2>&1
+  if [ ! $? -eq 0 ]; then
+    wget https://github.com/aquasecurity/trivy/releases/download/v0.37.3/trivy_0.37.3_Linux-64bit.deb
+    sudo dpkg -i trivy_0.37.3_Linux-64bit.deb
+    rm -r trivy_0.37.3_Linux-64bit.deb
+  fi
   sudo trivy --format json --output ./output/trivy_scan_results.json image userapplication-fastapi
   python3 ./trivy_scanning.py
 }

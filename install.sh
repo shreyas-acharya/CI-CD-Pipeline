@@ -7,6 +7,7 @@ END="\e[0m"
 BOLD="\e[1m"
 
 clean_up() {
+  echo "Running clean up function"
   delete_venv
   sudo docker compose -f ./UserApplication/docker-compose.yml down
   sudo docker compose -f ./UserApplication/docker-compose.yml -f ./UserApplication/docker-compose-production.yml down

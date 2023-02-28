@@ -111,9 +111,9 @@ run_container() {
   sudo docker compose -f ./UserApplication/docker-compose.yml -f ./UserApplication/docker-compose-production.yml down
 }
 
-FUNCTIONS=(create_venv clone_repository run_sast api_testing trivy_scanning create_env_file run_container delete_venv)
-HEADINGS=("Create a virtual Environment" "Clone git repository" "Run SAST" "API Testing" "Trivy Scanning" "Create .env file" "Create and run container" "Delete virtual environment")
-SUCCESS_MESSAGES=("Successfully created and enabled virtual env" "Successfully cloned repository" "SAST Scanning completed" "Testing completed" "Trivy Scanning completed" "Created .env file" "Containers removed" "Successfully deleted virtual env")
+FUNCTIONS=(create_venv clone_repository run_sast api_testing trivy_scanning create_env_file run_container)
+HEADINGS=("Create a virtual Environment" "Clone git repository" "Run SAST" "API Testing" "Trivy Scanning" "Create .env file" "Create and run container" "Clean up")
+SUCCESS_MESSAGES=("Successfully created and enabled virtual env" "Successfully cloned repository" "SAST Scanning completed" "Testing completed" "Trivy Scanning completed" "Created .env file" "Containers removed" "Clean Up Successful")
 FAILURE_MESSAGES=("" "" "" "" "" "" "" "")
 
 

@@ -4,6 +4,7 @@ from pathlib import Path
 from pprint import pprint
 import os
 import json
+import sys
 
 load_dotenv(dotenv_path=Path("../.env"))
 
@@ -87,6 +88,7 @@ def __raise_issues(findings):
     else:
         print(f"{len(issues)} issues found!!!\nRaising issues on Jira...")
         connection.create_issues(field_list=issues)
+        sys.exit(2)
 
 def main():
     findings = __parse_findings()

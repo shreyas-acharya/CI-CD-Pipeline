@@ -34,6 +34,7 @@ create_venv() {
   pip3 install requests
   pip3 install jira
   pip3 install python-dotenv
+  pip3 install pytest
 }
 
 delete_venv() {
@@ -75,7 +76,7 @@ api_testing() {
   
   sudo docker compose -f ./UserApplication/docker-compose.yml up --detach &&
   sleep 3 &&
-  python3 ./api_testing.py &&
+  pytest ./test_endpoints.py &&
   sudo docker compose -f ./UserApplication/docker-compose.yml down
 }
 

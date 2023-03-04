@@ -9,8 +9,8 @@ BOLD="\e[1m"
 clean_up() {
   echo "Running clean up function"
   delete_venv
-  sudo docker compose -f ./UserApplication/docker-compose.yml down
-  sudo docker compose -f ./UserApplication/docker-compose.yml -f ./UserApplication/docker-compose-production.yml down
+  docker compose -f ./UserApplication/docker-compose.yml down
+  docker compose -f ./UserApplication/docker-compose.yml -f ./UserApplication/docker-compose-production.yml down
 }
 
 check_if_done() {
@@ -74,20 +74,20 @@ api_testing() {
   echo "PASSWORD=test" >> UserApplication/.env
   echo "DATABASE=test" >> UserApplication/.env
   
-  sudo docker compose -f ./UserApplication/docker-compose.yml up --detach &&
+  docker compose -f ./UserApplication/docker-compose.yml up --detach &&
   sleep 3 &&
   pytest ./test_endpoints.py &&
-  sudo docker compose -f ./UserApplication/docker-compose.yml down
+  docker compose -f ./UserApplication/docker-compose.yml down
 }
 
 trivy_scanning() {
   which trivy > /dev/null 2>&1
   if [ ! $? -eq 0 ]; then
     wget https://github.com/aquasecurity/trivy/releases/download/v0.37.3/trivy_0.37.3_Linux-64bit.deb
-    sudo dpkg -i trivy_0.37.3_Linux-64bit.deb
+    dpkg -i trivy_0.37.3_Linux-64bit.deb
     rm -r trivy_0.37.3_Linux-64bit.deb
   fi
-  sudo trivy --format json --output ./output/trivy_scan_results.json image userapplication-fastapi
+  trivy --format json --output ./output/trivy_scan_results.json image userapplication-fastapi
   python3 ./trivy_scanning.py
 }
 
@@ -108,8 +108,8 @@ create_env_file() {
 }
 
 run_container() {
-  sudo docker compose -f ./UserApplication/docker-compose.yml -f ./UserApplication/docker-compose-production.yml up
-  sudo docker compose -f ./UserApplication/docker-compose.yml -f ./UserApplication/docker-compose-production.yml down
+  docker compose -f ./UserApplication/docker-compose.yml -f ./UserApplication/docker-compose-production.yml up
+  docker compose -f ./UserApplication/docker-compose.yml -f ./UserApplication/docker-compose-production.yml down
 }
 
 FUNCTIONS=(create_venv clone_repository run_sast api_testing trivy_scanning create_env_file run_container)

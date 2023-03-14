@@ -66,6 +66,13 @@ run_sast() {
 }
 
 api_testing() {
+  if [[ -e UserApplication/.env ]]; then
+    rm UserApplication/.env
+  fi
+  touch UserApplication/.env
+  echo "USERNAME=test" >> UserApplication/.env
+  echo "PASSWORD=test" >> UserApplication/.env
+  echo "DATABASE=test" >> UserApplication/.env
   docker compose -f ./UserApplication/docker-compose.yml up --detach &&
   sleep 3 &&
   pytest ./test_endpoints.py &&
@@ -104,9 +111,9 @@ run_container() {
   docker compose -f ./UserApplication/docker-compose.yml -f ./UserApplication/docker-compose-production.yml down
 }
 
-FUNCTIONS=(create_venv clone_repository run_sast api_testing create_env_file trivy_scanning run_container)
-HEADINGS=("Create a virtual Environment" "Clone git repository" "Run SAST" "API Testing" "Create .env file" "Trivy Scanning" "Create and run container")
-SUCCESS_MESSAGES=("Successfully created and enabled virtual env" "Successfully cloned repository" "SAST Scanning completed" "Testing completed" "Created .env file" "Trivy Scanning completed" "Containers removed")
+FUNCTIONS=(create_venv clone_repository run_sast api_testing trivy_scanning create_env_file run_container)
+HEADINGS=("Create a virtual Environment" "Clone git repository" "Run SAST" "API Testing" "Trivy Scanning" "Create .env file" "Create and run container")
+SUCCESS_MESSAGES=("Successfully created and enabled virtual env" "Successfully cloned repository" "SAST Scanning completed" "Testing completed" "Trivy Scanning completed" "Created .env file" "Containers removed")
 FAILURE_MESSAGES=("" "" "" "" "" "" "")
 
 

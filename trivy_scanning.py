@@ -90,8 +90,10 @@ def __raise_issues(findings):
         connection.create_issues(field_list=issues)
         sys.exit(2)
 
+
 def main():
     findings = __parse_findings()
     __raise_issues(findings)
+
 
 main()

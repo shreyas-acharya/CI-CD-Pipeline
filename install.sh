@@ -10,7 +10,6 @@ clean_up() {
   echo "Running clean up function"
   delete_venv
   docker compose -f ./UserApplication/docker-compose.yml down
-  docker compose -f ./UserApplication/docker-compose.yml -f ./UserApplication/docker-compose-production.yml down
 }
 
 check_if_done() {
@@ -108,8 +107,8 @@ create_env_file() {
 }
 
 run_container() {
-  docker compose -f ./UserApplication/docker-compose.yml -f ./UserApplication/docker-compose-production.yml up
-  docker compose -f ./UserApplication/docker-compose.yml -f ./UserApplication/docker-compose-production.yml down
+  docker compose -f ./UserApplication/docker-compose.yml up
+  docker compose -f ./UserApplication/docker-compose.yml down
 }
 
 FUNCTIONS=(create_venv clone_repository run_sast api_testing trivy_scanning create_env_file run_container)

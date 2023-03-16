@@ -19,3 +19,18 @@ jobs:
           path: ./output/semgrep_scan_results.json
       - name: Analyze findings
         run: python3 sast_analysis.py
+  API_Testing:
+    runs-on: ubuntu-latest
+    env:
+      USERNAME: test
+      PASSWORD: test
+      DATABASE: test
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+      - name: Update submodules
+        run: git submodule update --init --recursive
+      - name: Install dependencies
+        uses: ././github/actions/InstallDependencies
+      - name: Build containers
+        run: docker compose -f ./UserApplication/docker-compose-yml up

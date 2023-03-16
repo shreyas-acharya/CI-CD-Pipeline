@@ -13,7 +13,7 @@ jobs:
       - name: Run Semgrep
         run: semgrep --config=auto --output ./output/semgrep_scan_results.json --json UserApplication
       - name: Upload Arfifact
-        uses: action/upload-artifact@v3
+        uses: actions/upload-artifact@v3
         with:
           name: reports
           path: ./output

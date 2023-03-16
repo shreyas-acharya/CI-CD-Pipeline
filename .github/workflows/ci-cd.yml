@@ -31,6 +31,6 @@ jobs:
       - name: Update submodules
         run: git submodule update --init --recursive
       - name: Install dependencies
-        uses: ././github/actions/InstallDependencies
+        uses: ./.github/actions/InstallDependencies
       - name: Build containers
         run: docker compose -f ./UserApplication/docker-compose-yml up

@@ -17,13 +17,5 @@ jobs:
         with:
           name: sast findings
           path: ./output/semgrep_scan_results.json
-  Analyze:
-    needs: SAST
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: sast findings
-      - name: display file system
-        run: ls -lR
+      - name: Analyze findings
+        run: python3 sast_analysis.py

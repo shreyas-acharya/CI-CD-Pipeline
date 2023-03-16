@@ -34,8 +34,6 @@ jobs:
         uses: ./.github/actions/InstallDependencies
       - name: Build containers
         run: docker compose -f ./UserApplication/docker-compose.yml up --detach
-      - name: Check if the application is running
-        run: python3 check_if_port_up.py
       - name: Run API Tests
         run: pytest test_endpoints.py
       - name: Close containers

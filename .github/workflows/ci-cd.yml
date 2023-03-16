@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/InstallDependencies
       - name: Build containers
-        run: docker compose -f ./UserApplication/docker-compose.yml up
+        run: docker compose -f ./UserApplication/docker-compose.yml up --detach && sleep 10        
       - name: Run API Tests
         run: pytest test_endpoints.py
       - name: Close containers

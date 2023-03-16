@@ -11,3 +11,6 @@ runs:
     - name: Install dependencies
       run: pip3 install -r requirements.txt
       shell: bash
+    - name: Install User Application dependencies
+      run: pip3 install -r UserApplication/requirements.txt
+      shell: bash

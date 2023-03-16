@@ -1,8 +1,8 @@
 name: "CI CD Pipeline"
 on: workflow_dispatch
 jobs:
-  Get Code:
-    runs_on: ubuntu_latest
+  GetCode:
+    runs-on: ubuntu-latest
     steps:
       - name: Clone repository
         uses: actions/checkout@v3

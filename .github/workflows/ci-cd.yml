@@ -34,10 +34,10 @@ jobs:
         uses: ./.github/actions/InstallDependencies
       - name: Build containers
         run: docker compose -f ./UserApplication/docker-compose.yml up --detach
+      - name: Run API Tests
+        run: pytest test_endpoints.py
       - name: Close containers
         if: failure()
         run: |
           echo "running cleanup"
           docker compose -f ./UserApplication/docker-compose.yml down
-      - name: Run API Tests
-        run: pytest test_endpoints.py

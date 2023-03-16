@@ -21,23 +21,24 @@ jobs:
         run: python3 sast_analysis.py
   API_Testing:
     runs-on: ubuntu-latest
-    env:
-      USERNAME: root
-      PASSWORD: root
-      DATABASE: test
+    container: python:3.11-slim
+    services:
+      db:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-      - name: Update submodules
-        run: git submodule update --init --recursive
+      - name: Update Submodules
+        uses: git submodule update --init --recursive
       - name: Install dependencies
         uses: ./.github/actions/InstallDependencies
-      - name: Build containers
-        run: docker compose -f ./UserApplication/docker-compose.yml up --detach
-      - name: Run API Tests
-        run: pytest test_endpoints.py
-      - name: Close containers
-        if: always()
-        run: |
-          echo "running cleanup"
-          docker compose -f ./UserApplication/docker-compose.yml down
+      - name: Run Application
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        run: python3 UserApplication/App/main.py

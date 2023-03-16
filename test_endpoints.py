@@ -1,7 +1,26 @@
 import requests
 from contextlib import contextmanager
+import socket
+import time
+import pytest
+import sys
 
 BASE_URL = "http://0.0.0.0:8000"
+timeout = 3
+
+
+@pytest.fixture
+def check_if_port_up():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    for _ in range(10):
+        result = sock.connect_ex(("0.0.0.0", 8000))
+        if result == 0:
+            return
+        else:
+            print(".", end="")
+            time.sleep(timeout)
+    sys.exit(1)
 
 
 @contextmanager
@@ -70,13 +89,13 @@ def delete_user():
     return requests.delete(f"{BASE_URL}/deleteUser")
 
 
-def test_endpoint_getUsers():
+def test_endpoint_getUsers(check_if_port_up):
     check_validity(get_users(), [])
     with test_session() as _:
         check_validity(get_users(), [{"username": "testa"}, {"username": "testb"}])
 
 
-def test_endpoint_addUser():
+def test_endpoint_addUser(check_if_port_up):
     with test_session() as _:
         data = {
             "username": "testc",
@@ -89,7 +108,7 @@ def test_endpoint_addUser():
         check_validity(add_user(data), "Username already exists!!!")
 
 
-def test_endpoint_login():
+def test_endpoint_login(check_if_port_up):
     with test_session() as _:
         check_validity(login("testx", "testx"), "User doesn't exists")
         check_validity(login("testa", "testx"), "Incorrect password")
@@ -100,14 +119,14 @@ def test_endpoint_login():
         check_validity(login("testb", "testb"), "Already logged in")
 
 
-def test_endpoint_logout():
+def test_endpoint_logout(check_if_port_up):
     with test_session() as _:
         check_validity(login("testa", "testa"), "Login Successful : testa")
         check_validity(logout(), "Logout Successful : testa")
         check_validity(logout(), "No user logged in!!!")
 
 
-def test_endpoint_getDetails():
+def test_endpoint_getDetails(check_if_port_up):
     with test_session() as _:
         check_validity(get_details(), "No user logged in!!!")
         check_validity(login("testa", "testa"), "Login Successful : testa")
@@ -123,7 +142,7 @@ def test_endpoint_getDetails():
         )
 
 
-def test_endpoint_updateUser():
+def test_endpoint_updateUser(check_if_port_up):
     with test_session() as _:
         check_validity(update_user({}), "No user logged in!!!")
         check_validity(login("testa", "testa"), "Login Successful : testa")
@@ -151,7 +170,7 @@ def test_endpoint_updateUser():
         )
 
 
-def test_endpoint_deleteUser():
+def test_endpoint_deleteUser(check_if_port_up):
     with test_session() as _:
         check_validity(delete_user(), "No user logged in!!!")
         check_validity(login("testa", "testa"), "Login Successful : testa")

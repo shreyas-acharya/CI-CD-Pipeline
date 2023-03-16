@@ -10,6 +10,7 @@ for _ in range(10):
     result = sock.connect_ex(("0.0.0.0", 8000))
     if result == 0:
         print("Port is up")
+        time.sleep(5)
         sys.exit(0)
     else:
         print("waiting ...")

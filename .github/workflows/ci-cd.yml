@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/InstallDependencies
       - name: Build containers
-        run: docker compose -f ./UserApplication/docker-compose.yml --detach up
+        run: docker compose -f ./UserApplication/docker-compose.yml up --detach
       - run: exit 1
       - name: Close containers
         if: failure()

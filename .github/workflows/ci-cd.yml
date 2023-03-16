@@ -33,7 +33,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
       - name: Update Submodules
-        uses: git submodule update --init --recursive
+        run: git submodule update --init --recursive
       - name: Install dependencies
         uses: ./.github/actions/InstallDependencies
       - name: Run Application

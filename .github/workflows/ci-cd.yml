@@ -21,10 +21,10 @@ jobs:
         run: python3 sast_analysis.py
   API_Testing:
     runs-on: ubuntu-latest
-    container: python:3.11-slim
+    container: python
     services:
       db:
-        image: postgres:15-alpine
+        image: postgres
         env:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test

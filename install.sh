@@ -30,11 +30,12 @@ press_any_key_to_continue() {
 create_venv() {
   python3 -m venv venv
   source venv/bin/activate
-  pip3 install semgrep
-  pip3 install requests
-  pip3 install jira
-  pip3 install python-dotenv
-  pip3 install pytest
+  # pip3 install semgrep
+  # pip3 install requests
+  # pip3 install jira
+  # pip3 install python-dotenv
+  # pip3 install pytest
+  pip3 install -r ./requirements.txt
 }
 
 delete_venv() {

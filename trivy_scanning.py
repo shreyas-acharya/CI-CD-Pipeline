@@ -85,7 +85,7 @@ def __parse_semgrep_findings():
         finding["labels"] = [
             f"resource:check_id|{result['check_id']}",
             f"resouce:meta:rule_id|"
-            + result["extra"]["metadata"]['"semgrep.dev"']["rule"]["rule_id"],
+            + result["extra"]["metadata"]['semgrep.dev']["rule"]["rule_id"],
             f"resouce:meta:owasp|" + " ".join(result["extra"]["metadata"]["owasp"]),
             f"scanner|semgrep",
         ]

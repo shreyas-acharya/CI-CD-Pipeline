@@ -48,8 +48,6 @@ jobs:
       # - run: ls -lR
       - name: Instal Dependencies
         uses: ./.github/actions/InstallDependencies
-        with:
-          submodule_dependency: false
       - name: Parse findings
         env:
           JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
@@ -75,6 +73,8 @@ jobs:
         run: git submodule update --init --recursive
       - name: Install dependencies
         uses: ./.github/actions/InstallDependencies
+        with:
+          submodule_dependency: true
       - name: Run Api Tests
         env:
           POSTGRES_USER: test

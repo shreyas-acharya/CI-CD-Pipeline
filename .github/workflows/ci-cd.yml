@@ -21,7 +21,6 @@ jobs:
         run: python3 sast_analysis.py
   API_Testing:
     runs-on: ubuntu-latest
-    # container: python
     services:
       db:
         image: postgres
@@ -34,7 +33,6 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-      - run: git config --global --add safe.directory /__w/CI-CD-Pipeline/CI-CD-Pipeline
       - name: Update Submodules
         run: git submodule update --init --recursive
       - name: Install dependencies

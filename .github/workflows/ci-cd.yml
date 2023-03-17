@@ -17,10 +17,38 @@ jobs:
         with:
           name: sast findings
           path: semgrep_scan_results.json
-      - name: Analyze findings
-        run: python3 sast_analysis.py semgrep_scan_results.json
+  TrivyScanning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          repository: shreyas-acharya/UserApplication
+      - name: Build docker image
+        run: docker build -t userapplication-image .
+      - name: Container Scanning
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'userapplication-image'
+          format: json
+          output: trivy_scan_results.json
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: trivy findings
+          path: trivy_scan_results.json
+  Jira:
+    needs: [SAST, TrivyScanning]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+      - name: Parse findings
+        run: python3 trivy_scanning.py trivy_scan_results.json semgrep_scan_results.json
   API_Testing:
-    needs: SAST
+    needs: Jira
     runs-on: ubuntu-latest
     services:
       db:
@@ -45,23 +73,4 @@ jobs:
           POSTGRES_DB: test
           POSTGRES_HOST: localhost
         run: python3 test_endpoints.py
-  TrivyScanning:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v3
-        with:
-          repository: shreyas-acharya/UserApplication
-      - name: Build docker image
-        run: docker build -t userapplication-image .
-      - name: Container Scanning
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'userapplication-image'
-          format: json
-          output: trivy_scan_results.json
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: trivy findings
-          path: trivy_scan_results.json
+  # JiraTickets:

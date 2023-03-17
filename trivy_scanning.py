@@ -6,8 +6,6 @@ import os
 import json
 import sys
 
-load_dotenv(dotenv_path=Path("../.env"))
-
 JIRA_EMAIL = os.getenv("JIRA_EMAIL")
 JIRA_TOKEN = os.getenv("JIRA_TOKEN")
 JIRA_SERVER = os.getenv("JIRA_SERVER")
@@ -15,9 +13,9 @@ JIRA_SERVER = os.getenv("JIRA_SERVER")
 connection = JIRA(basic_auth=(JIRA_EMAIL, JIRA_TOKEN), server=JIRA_SERVER)
 
 
-def __parse_findings():
+def __parse_trivy_findings():
     findings = []
-    with open("./output/trivy_scan_results.json", "r") as f:
+    with open(sys.argv[1], "r") as f:
         results = json.loads(f.read())
 
     resource_type = "container-image"
@@ -70,6 +68,33 @@ def __parse_findings():
     return findings
 
 
+def __parse_semgrep_findings():
+    with open(sys.argv[2]) as file:
+        data = json.loads(file.read())
+    findings = []
+    for result in data["results"]:
+        finding = dict()
+        finding["title"] = result["extra"]["message"]
+        finding["severity"] = result["extra"]["severity"]
+        finding["description"] = "References : \n" + "\n".join(
+            result["extra"]["metadata"]["references"]
+        )
+        finding["description"] += (
+            "File : " + result["path"] + f" - line: {result['start']['line']}"
+        )
+        finding["labels"] = [
+            f"resource:check_id|{result['check_id']}",
+            f"resouce:meta:rule_id|"
+            + result["extra"]["metadata"]['"semgrep.dev"']["rule"]["rule_id"],
+            f"resouce:meta:owasp|" + " ".join(result["extra"]["metadata"]["owasp"]),
+            f"scanner|semgrep",
+        ]
+        finding["unique_ids"] = []
+
+        findings.append(finding)
+    return findings
+
+
 def __raise_issues(findings):
     issues = []
     for finding in findings:
@@ -79,21 +104,24 @@ def __raise_issues(findings):
                     "issuetype": {"name": "Task"},
                     "summary": finding["title"],
                     "description": finding["description"],
-                    "labels": finding["labels"],
+                    "labels": finding["labels"] + finding["unique_ids"],
                     "project": {"key": "CCP"},
                 }
             )
-    if len(issues) == 0:
-        print("No issues found")
-    else:
-        print(f"{len(issues)} issues found!!!\nRaising issues on Jira...")
-        connection.create_issues(field_list=issues)
-        sys.exit(2)
+    return issues
 
 
 def main():
-    findings = __parse_findings()
-    __raise_issues(findings)
+    trivy_issues = __raise_issues(__parse_trivy_findings())
+    semgrep_issues = __raise_issues(__parse_semgrep_findings())
+    if len(trivy_issues) + len(semgrep_issues) == 0:
+        print("No issues found")
+    else:
+        print(
+            f"Number of semgrep issues : {len(semgrep_issues)}\nNumber of trivy issues : {len(trivy_issues)}\nRaising issues on Jira"
+        )
+        connection.create_issues(field_list=trivy_issues + semgrep_issues)
+        sys.exit(2)
 
 
 main()

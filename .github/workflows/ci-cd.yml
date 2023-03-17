@@ -40,6 +40,7 @@ jobs:
   Jira:
     needs: [SAST, TrivyScanning]
     runs-on: ubuntu-latest
+    continue-on-error: ${{ github.ref == 'refs/heads/test' }}
     steps:
       - name: Clone repository
         uses: actions/checkout@v3

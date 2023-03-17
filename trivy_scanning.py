@@ -98,7 +98,7 @@ def __parse_semgrep_findings():
 def __raise_issues(findings):
     issues = []
     for finding in findings:
-        if finding["severity"] in ["HIGH", "CRITICAL"]:
+        if finding["severity"] in ["HIGH", "CRITICAL", "ERROR"]:
             issues.append(
                 {
                     "issuetype": {"name": "Task"},

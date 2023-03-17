@@ -4,6 +4,8 @@ import socket
 import time
 import pytest
 import sys
+from multiprocessing import Process
+from subprocess import run
 
 BASE_URL = "http://0.0.0.0:8000"
 timeout = 3
@@ -176,3 +178,14 @@ def test_endpoint_deleteUser(check_if_port_up):
         check_validity(login("testa", "testa"), "Login Successful : testa")
         check_validity(delete_user(), "User Deleted")
         check_validity(get_users(), [{"username": "testb"}])
+
+
+def start_application():
+    run(["python", "UserApplication/App/main.py"])
+
+
+if __name__ == "__main__":
+    proc = Process(target=start_application, daemon=True)
+    proc.start()
+    run(["pytest", "test_endpoints.py"])
+    proc.kill()

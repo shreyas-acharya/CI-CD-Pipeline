@@ -21,10 +21,12 @@ jobs:
         run: python3 sast_analysis.py
   API_Testing:
     runs-on: ubuntu-latest
-    container: python
+    # container: python
     services:
       db:
         image: postgres
+        ports:
+          - 5432:5432
         env:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
@@ -42,4 +44,5 @@ jobs:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
           POSTGRES_DB: test
+          POSTGRES_HOST: localhost
         run: python3 test_endpoints.py

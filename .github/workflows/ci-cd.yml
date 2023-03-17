@@ -20,6 +20,7 @@ jobs:
       - name: Analyze findings
         run: python3 sast_analysis.py
   API_Testing:
+    needs: SAST
     runs-on: ubuntu-latest
     services:
       db:
@@ -44,3 +45,21 @@ jobs:
           POSTGRES_DB: test
           POSTGRES_HOST: localhost
         run: python3 test_endpoints.py
+  TrivyScanning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+      - name: Update submodules
+        run: git submodule update --init --recursive
+      - name: Install trivy
+        run: wget https://github.com/aquasecurity/trivy/releases/download/v0.37.3/trivy_0.37.3_Linux-64bit.deb
+      - name: Build docker image
+        run: docker build -t userapplication-image -f UserApplication/Dockerfile
+      - name: Container Scanning
+        run: trivy --format json --output ./output/trivy_scan_results.json image userapplication-image
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: trivy findings
+          path: ./output/trivy_scan_results.json

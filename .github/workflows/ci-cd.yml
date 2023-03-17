@@ -59,7 +59,7 @@ jobs:
         with:
           image-ref: 'userapplication-image'
           format: json
-          output: trivy_scan_results.json
+          output: ./output/trivy_scan_results.json
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:

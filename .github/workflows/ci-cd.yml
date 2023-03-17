@@ -22,13 +22,13 @@ jobs:
   API_Testing:
     runs-on: ubuntu-latest
     container: python
-    env:
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
-      POSTGRES_DB: test
     services:
       db:
         image: postgres
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
     steps:
       - name: Clone repository
         uses: actions/checkout@v3

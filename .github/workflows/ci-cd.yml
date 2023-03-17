@@ -54,7 +54,9 @@ jobs:
           repository: shreyas-acharya/UserApplication
       - run: ls -lR
       - name: Install trivy
-        run: wget https://github.com/aquasecurity/trivy/releases/download/v0.37.3/trivy_0.37.3_Linux-64bit.deb
+        run: |
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.37.3/trivy_0.37.3_Linux-64bit.deb
+          dpkg -i trivy_0.37.3_Linux-64bit.deb
       - name: Build docker image
         run: docker build -t userapplication-image .
       - name: Container Scanning

@@ -37,9 +37,9 @@ jobs:
         run: git submodule update --init --recursive
       - name: Install dependencies
         uses: ./.github/actions/InstallDependencies
-      - name: Run Application
+      - name: Run Api Tests
         env:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
           POSTGRES_DB: test
-        run: python3 UserApplication/App/main.py
+        run: python3 test_endpoints.py

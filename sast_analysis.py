@@ -3,7 +3,7 @@ import sys
 
 
 def analyze():
-    with open(sys.argv[0]) as file:
+    with open(sys.argv[1]) as file:
         data = json.load(file)
         files_scanned = len(data["paths"]["scanned"])
         errors = len(data["errors"])

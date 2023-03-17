@@ -1,7 +1,7 @@
 name: "Install dependencies"
 description: "Install and cache the dependencies"
 inputs:
-  submodule_depedency:
+  submodule_dependency:
     description: "Install submodule dependencies"
     required: false
     default: 'false'

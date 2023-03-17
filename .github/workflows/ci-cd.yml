@@ -11,12 +11,12 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/InstallDependencies
       - name: Run Semgrep
-        run: semgrep --config=auto --output ./output/semgrep_scan_results.json --json UserApplication
+        run: semgrep --config=auto --output semgrep_scan_results.json --json UserApplication
       - name: Upload Arfifact
         uses: actions/upload-artifact@v3
         with:
           name: sast findings
-          path: ./output/semgrep_scan_results.json
+          path: semgrep_scan_results.json
       - name: Analyze findings
         run: python3 sast_analysis.py
   API_Testing:
@@ -59,9 +59,9 @@ jobs:
         with:
           image-ref: 'userapplication-image'
           format: json
-          output: ./output/trivy_scan_results.json
+          output: trivy_scan_results.json
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: trivy findings
-          path: ./output/trivy_scan_results.json
+          path: trivy_scan_results.json

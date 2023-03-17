@@ -58,7 +58,6 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: 'userapplication-image'
-          scan-type: image
           format: json
           output: trivy_scan_results.json
       - name: Upload artifact

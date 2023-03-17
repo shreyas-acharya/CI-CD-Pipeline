@@ -17,6 +17,6 @@ runs:
       run: pip3 install -r requirements.txt
       shell: bash
     - name: Install User Application dependencies
-      if: inputs.submodule_depedency == 'true'
+      if: inputs.submodule_dependency == 'true'
       run: pip3 install -r UserApplication/requirements.txt
       shell: bash

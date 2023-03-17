@@ -3,7 +3,7 @@ description: "Install and cache the dependencies"
 inputs:
   submodule_depedency:
     description: "Install submodule dependencies"
-    required: true
+    required: false
     default: 'false'
 runs:
   using: composite

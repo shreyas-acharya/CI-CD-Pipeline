@@ -1,5 +1,10 @@
 name: "Install dependencies"
 description: "Install and cache the dependencies"
+inputs:
+  submodule_depedency:
+    description: "Install submodule dependencies"
+    required: true
+    default: 'false'
 runs:
   using: composite
   steps:
@@ -12,5 +17,6 @@ runs:
       run: pip3 install -r requirements.txt
       shell: bash
     - name: Install User Application dependencies
+      if: inputs.submodule_depedency == 'true'
       run: pip3 install -r UserApplication/requirements.txt
       shell: bash

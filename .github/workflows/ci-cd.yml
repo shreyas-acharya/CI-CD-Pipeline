@@ -47,6 +47,8 @@ jobs:
         uses: actions/download-artifact@v3
       - name: Instal Dependencies
         uses: ./.github/actions/InstallDependencies
+        with:
+          submodule_dependency: false
       - name: Parse findings
         env:
           JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}

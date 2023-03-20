@@ -30,11 +30,6 @@ press_any_key_to_continue() {
 create_venv() {
   python3 -m venv venv
   source venv/bin/activate
-  # pip3 install semgrep
-  # pip3 install requests
-  # pip3 install jira
-  # pip3 install python-dotenv
-  # pip3 install pytest
   pip3 install -r ./requirements.txt
 }
 
@@ -59,7 +54,7 @@ run_sast() {
     mkdir output
   fi 
   semgrep --config=auto --output ./output/semgrep_scan_results.json --json UserApplication &&
-  python ./sast_analysis.py
+  python ./sast_analysis.py ./output/semgrep_scan_results.json
   if [[ $? -eq 1 ]]; then
     echo
     press_any_key_to_continue "${YELLOW}Warnings found!!! press any key to continue${END}"
@@ -88,7 +83,7 @@ trivy_scanning() {
     rm -r trivy_0.37.3_Linux-64bit.deb
   fi
   trivy --format json --output ./output/trivy_scan_results.json image userapplication-fastapi
-  python3 ./trivy_scanning.py
+  python3 ./trivy_scanning.py ./output/trivy_scan_results.json ./output/semgrep_scan_results.json
 }
 
 create_env_file() {

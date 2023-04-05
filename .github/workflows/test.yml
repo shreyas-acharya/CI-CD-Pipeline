@@ -6,4 +6,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - run: pip3 install rich
       - run: python3 test.py

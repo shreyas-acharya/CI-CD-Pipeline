@@ -122,6 +122,9 @@ jobs:
           PASSWORD: root
           DATEBASE: test
           IMAGE: ghcr.io/shreyas-acharya/fastapi:1.0
+      - run: sleep 10
+      - name: Testing
+        run: curl-X GET http://0.0.0.0:8000/
       - name: Testing endpoint
         run: curl -X GET http://0.0.0.0:8000/version
       - name: Stop docker images

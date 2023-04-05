@@ -1,5 +1,6 @@
 name: "CI CD Pipeline"
-on: [push, workflow_dispatch, repository_dispatch]
+# on: [push, workflow_dispatch, repository_dispatch]
+on: [workflow_dispatch, repository_dispatch]
 jobs:
   SAST:
     runs-on: ubuntu-latest
@@ -124,7 +125,7 @@ jobs:
           IMAGE: ghcr.io/shreyas-acharya/fastapi:1.0
       - run: sleep 10
       - name: Testing
-        run: curl-X GET http://0.0.0.0:8000/
+        run: curl -X GET http://0.0.0.0:8000/
       - name: Testing endpoint
         run: curl -X GET http://0.0.0.0:8000/version
       - name: Stop docker images

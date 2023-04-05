@@ -116,9 +116,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.PAT_TOKEN }}
       - name: Run docker compose
-        run: docker compose up
+        run: docker compose up -d
         env:
           USERNAME: root
           PASSWORD: root
           DATEBASE: test
           IMAGE: ghcr.io/shreyas-acharya/fastapi:1.0
+      - name: Testing endpoint
+        run: curl -X GET http://0.0.0.0:8000/version
+      - name: Stop docker images
+        run: docker compose down

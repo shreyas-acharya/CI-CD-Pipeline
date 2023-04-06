@@ -138,4 +138,4 @@ jobs:
             StrictHostKeyChecking no
           END
       - name: Setup nginx
-        run: ssh ec2 echo "Testing" > test.txt
+        run: ssh ec2 echo "Testing" > /var/test.txt

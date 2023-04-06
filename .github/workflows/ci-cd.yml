@@ -40,7 +40,8 @@ jobs:
   Jira:
     needs: [SAST, TrivyScanning]
     runs-on: ubuntu-latest
-    continue-on-error: ${{ github.event_name == 'workflow_dispatch' }}
+    # continue-on-error: ${{ github.event_name == 'workflow_dispatch' }}
+    continue-on-error: true
     steps:
       - name: Clone repository
         uses: actions/checkout@v3

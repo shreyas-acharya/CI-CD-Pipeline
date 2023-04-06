@@ -122,7 +122,9 @@ jobs:
       - name: Start the EC2 Instance
         run: aws ec2 start-instances --instance-id $AWS_INSTANCE_ID
       - name: List EC2 Instances
-        run: aws ec2 describe-instances
+        run: |
+          sleep 20
+          aws ec2 describe-instances
       - name: SSH into EC2 Instance
         run: |
           echo $AWS_PRIVATE_KEY > private_key && chmod 600 private_key

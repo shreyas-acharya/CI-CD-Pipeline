@@ -110,10 +110,10 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_INSTANCE_ID: ${{ secrets.AWS_INSTANCE_ID }}
-      AWS_USERNAME: ${{ vars.AWS_USERNAME }}
-      AWS_HOSTNAME: ${{ vars.AWS_HOSTNAME }}
+      AWS_USERNAME: ${{ secrets.AWS_USERNAME }}
+      AWS_HOSTNAME: ${{ secrets.AWS_HOSTNAME }}
       AWS_PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
-      AWS_PUBLIC_ADDR: ${{ vars.AWS_PUBLIC_ADDR}}
+      AWS_PUBLIC_ADDR: ${{ secrets.AWS_PUBLIC_ADDR}}
       USERNAME: ${{ secrets.USERNAME }}
       PASSWORD: ${{ secrets.PASSWORD }}
       DATABASE: ${{ secrets.DATABASE }}
@@ -121,24 +121,20 @@ jobs:
     steps:
       - name: Start the EC2 Instance
         run: aws ec2 start-instances --instance-id $AWS_INSTANCE_ID
-      - name: Installing dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install openssh-server
-          sudo ufw allow 22
       - name: List EC2 Instances
         run: |
           # sleep 20
           aws ec2 describe-instances
       - name: SSH into EC2 Instance
         run: |
-          sudo echo $AWS_PRIVATE_KEY > private_key.pem && sudo chmod 600 private_key.pem
-          ssh -i private_key.pem -o StrictHostKeyChecking=no $AWS_USERNAME@$AWS_HOSTNAME '
-            # Setup NGINX
-            sudo echo 'server { listen 80; server_name $AWS_PUBLIC_ADDR; location / { proxy_pass http://0.0.0.0:8000;}}' > /etc/nginx/sites-enabled/userapplication_nginx
-            sudo service nginx restart
-            cd /home/ubuntu
-            wget https://raw.githubusercontent.com/shreyas-acharya/UserApplication/HEAD/docker-compose.yml
-            sudo docker-compose down
-            sudo docker-compose up
-          '
+          mkdir -p ~/.ssh
+          echo "$AWS_PRIVATE_KEY" > ~/.ssh/github-actions-key
+          chmod 600 ~/.ssh/github-actions-key 
+          cat >>~/.ssh/config <<END
+          Host ec2
+            HostName $AWS_HOSTNAME
+            User $AWS_USERNAME
+            IdentityFile ~/.ssh/github-actions-key
+            StrictHostKeyChecking no
+          END
+      - run: ssh ec2 'ls -la'

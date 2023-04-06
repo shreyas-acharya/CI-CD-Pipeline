@@ -105,15 +105,33 @@ jobs:
   Deploy:
     needs: PushImages
     runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_INSTANCE_ID: ${{ secrets.AWS_INSTANCE_ID }}
+      AWS_USERNAME: ${{ secrets.AWS_USERNAME }}
+      AWS_HOSTNAME: ${{ secrets.AWS_HOSTNAME }}
+      AWS_PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
+      AWS_PUBLIC_ADDR: ${{ secrets.AWS_PUBLIC_ADDR}}
+      USERNAME: ${{ secrets.USERNAME }}
+      PASSWORD: ${{ secrets.PASSWORD }}
+      DATABASE: ${{ secrets.DATABASE }}
+      VERSION: ${{ vars.VERSION }}
     steps:
       - name: Start the EC2 Instance
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_INSTANCE_ID: ${{ secrets.AWS_INSTANCE_ID }}
+        run: aws ec2 start-instances --instance-id $AWS_INSTANCE_ID
+      - name: List EC2 Instances
+        run: aws ec2 describe-instances
+      - name: SSH into EC2 Instance
         run: |
-          export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-          export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-          export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
-          aws ec2 describe_instances
+          echo $AWS_PRIVATE_KEY > private_key && chmod 600 private_key
+          ssh -i private_key $AWS_USERNAME@$AWS_HOSTNAME '
+            # Setup NGINX
+            sudo echo 'server { listen 80; server_name $AWS_PUBLIC_ADDR; location / { proxy_pass http://0.0.0.0:8000;}}' > /etc/nginx/sites-enabled/userapplication_nginx
+            sudo service nginx restart
+            cd /home/ubuntu
+            wget https://raw.githubusercontent.com/shreyas-acharya/UserApplication/HEAD/docker-compose.yml
+            sudo docker-compose down
+            sudo docker-compose up
+          '

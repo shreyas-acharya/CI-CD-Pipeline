@@ -132,7 +132,7 @@ jobs:
           aws ec2 describe-instances
       - name: SSH into EC2 Instance
         run: |
-          echo $AWS_PRIVATE_KEY > private_key.pem && chmod 400 private_key.pem
+          echo $AWS_PRIVATE_KEY > private_key.pem && chmod 600 private_key.pem
           ssh -i private_key.pem -o StrictHostKeyChecking=no $AWS_USERNAME@$AWS_HOSTNAME '
             # Setup NGINX
             sudo echo 'server { listen 80; server_name $AWS_PUBLIC_ADDR; location / { proxy_pass http://0.0.0.0:8000;}}' > /etc/nginx/sites-enabled/userapplication_nginx

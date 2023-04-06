@@ -2,108 +2,108 @@ name: "CI CD Pipeline"
 # on: [push, workflow_dispatch, repository_dispatch]
 on: [push, workflow_dispatch, repository_dispatch]
 jobs:
-  # SAST:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Clone repository
-  #       uses: actions/checkout@v3
-  #     - name: Update submodules
-  #       run: git submodule update --init --recursive
-  #     - name: Install dependencies
-  #       uses: ./.github/actions/InstallDependencies
-  #     - name: Run Semgrep
-  #       run: semgrep --config=auto --output semgrep_scan_results.json --json UserApplication
-  #     - name: Upload Arfifact
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: sast findings
-  #         path: semgrep_scan_results.json
-  # TrivyScanning:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Clone repository
-  #       uses: actions/checkout@v3
-  #       with:
-  #         repository: shreyas-acharya/UserApplication
-  #     - name: Build docker image
-  #       run: docker build -t userapplication-image .
-  #     - name: Container Scanning
-  #       uses: aquasecurity/trivy-action@master
-  #       with:
-  #         image-ref: 'userapplication-image'
-  #         format: json
-  #         output: trivy_scan_results.json
-  #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: trivy findings
-  #         path: trivy_scan_results.json
-  # Jira:
-  #   needs: [SAST, TrivyScanning]
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: ${{ github.event_name == 'workflow_dispatch' }}
-  #   steps:
-  #     - name: Clone repository
-  #       uses: actions/checkout@v3
-  #     - name: Download artifact
-  #       uses: actions/download-artifact@v3
-  #     # - run: ls -lR
-  #     - name: Instal Dependencies
-  #       uses: ./.github/actions/InstallDependencies
-  #     - name: Parse findings
-  #       env:
-  #         JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
-  #         JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
-  #         JIRA_SERVER: ${{ secrets.JIRA_SERVER }}
-  #       run: python3 trivy_scanning.py ./trivy\ findings/trivy_scan_results.json ./sast\ findings/semgrep_scan_results.json
-  # API_Testing:
-  #   needs: Jira
-  #   runs-on: ubuntu-latest
-  #   services:
-  #     db:
-  #       image: postgres
-  #       ports:
-  #         - 5432:5432
-  #       env:
-  #         POSTGRES_USER: test
-  #         POSTGRES_PASSWORD: test
-  #         POSTGRES_DB: test
-  #   steps:
-  #     - name: Clone repository
-  #       uses: actions/checkout@v3
-  #     - name: Update Submodules
-  #       run: git submodule update --init --recursive
-  #     - name: Install dependencies
-  #       uses: ./.github/actions/InstallDependencies
-  #       with:
-  #         submodule_dependency: true
-  #     - name: Run Api Tests
-  #       env:
-  #         POSTGRES_USER: test
-  #         POSTGRES_PASSWORD: test
-  #         POSTGRES_DB: test
-  #         POSTGRES_HOST: localhost
-  #       run: python3 test_endpoints.py
-  # PushImages:
-  #   needs: API_Testing
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Clone repository
-  #       uses: actions/checkout@v3
-  #       with:
-  #         repository: shreyas-acharya/UserApplication
-  #     - name: Login to ghcr.io
-  #       uses: docker/login-action@v1
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.PAT_TOKEN }}
-  #     - name: Build and push images
-  #       run: |
-  #         chmod +x build.sh
-  #         ./build.sh
+  SAST:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+      - name: Update submodules
+        run: git submodule update --init --recursive
+      - name: Install dependencies
+        uses: ./.github/actions/InstallDependencies
+      - name: Run Semgrep
+        run: semgrep --config=auto --output semgrep_scan_results.json --json UserApplication
+      - name: Upload Arfifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: sast findings
+          path: semgrep_scan_results.json
+  TrivyScanning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          repository: shreyas-acharya/UserApplication
+      - name: Build docker image
+        run: docker build -t userapplication-image .
+      - name: Container Scanning
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'userapplication-image'
+          format: json
+          output: trivy_scan_results.json
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: trivy findings
+          path: trivy_scan_results.json
+  Jira:
+    needs: [SAST, TrivyScanning]
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ github.event_name == 'workflow_dispatch' }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+      # - run: ls -lR
+      - name: Instal Dependencies
+        uses: ./.github/actions/InstallDependencies
+      - name: Parse findings
+        env:
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+          JIRA_SERVER: ${{ secrets.JIRA_SERVER }}
+        run: python3 trivy_scanning.py ./trivy\ findings/trivy_scan_results.json ./sast\ findings/semgrep_scan_results.json
+  API_Testing:
+    needs: Jira
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+      - name: Update Submodules
+        run: git submodule update --init --recursive
+      - name: Install dependencies
+        uses: ./.github/actions/InstallDependencies
+        with:
+          submodule_dependency: true
+      - name: Run Api Tests
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+          POSTGRES_HOST: localhost
+        run: python3 test_endpoints.py
+  PushImages:
+    needs: API_Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          repository: shreyas-acharya/UserApplication
+      - name: Login to ghcr.io
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.PAT_TOKEN }}
+      - name: Build and push images
+        run: |
+          chmod +x build.sh
+          ./build.sh
   Deploy:
-    # needs: PushImages
+    needs: PushImages
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -145,37 +145,5 @@ jobs:
             echo "PASSWORD=${{ env.PASSWORD }}" >> .env
             echo "DATABASE=${{ env.DATABASE }}" >> .env
             sudo docker-compose down
-            sudo docker-compose up
+            sudo docker-compose up -d
           '
-      # - name: SSH into EC2 Instance
-      #   run: |
-      #     mkdir -p ~/.ssh
-      #     echo "$AWS_PRIVATE_KEY" > ~/.ssh/github-actions-key
-      #     chmod 600 ~/.ssh/github-actions-key 
-      #     cat >>~/.ssh/config <<END
-      #     Host ec2
-      #       HostName $AWS_HOSTNAME
-      #       User $AWS_USERNAME
-      #       IdentityFile ~/.ssh/github-actions-key
-      #       StrictHostKeyChecking no
-      #     END
-      # - name: Setup nginx
-      #   run: |
-      #     ssh -t ec2 'sudo chown "$AWS_USERNAME":"$AWS_USERNAME" /etc/nginx/sites-enabled/'
-      #     ssh -t ec2 'cat >/etc/nginx/sites-enabled/userapplication_nginx <<END
-      #     server {
-      #         listen 80;
-      #         server_name "${AWS_PUBLIC_ADDR}";
-      #         location / {
-      #             proxy_pass http://0.0.0.0:8000;
-      #         }
-      #     }
-      #     END'
-      #     ssh -t ec2 'sudo cat /etc/nginx/sites-enabled/userapplication_nginx'
-      #     ssh -t ec2 'sudo service nginx restart'
-      # - name: Clone docker-compose
-      #   run: |
-      #     ssh -t ec2 'sudo chown $AWS_USERNAME:$AWS_USERNAME /home/'
-      #     ssh -t ec2 'cd /home/ubuntu/'
-      #     ssh -t ec2 'sudo wget https://raw.githubusercontent/shreyas-acharya/UserApplication/HEAD/docker-compose.yml'
-      #     ssh -t ec2 'ls -la'

@@ -137,4 +137,4 @@ jobs:
             IdentityFile ~/.ssh/github-actions-key
             StrictHostKeyChecking no
           END
-      - run: ssh ec2 'ls -la'
+      - run: ssh docker -version

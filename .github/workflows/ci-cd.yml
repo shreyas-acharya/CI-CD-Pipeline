@@ -138,4 +138,6 @@ jobs:
             StrictHostKeyChecking no
           END
       - name: Setup nginx
-        run: ssh ec2 sudo echo "Testing" > /var/test.txt
+        run: 
+          ssh e2 chown ubuntu:ubuntu /var/
+          ssh ec2 sudo echo "Testing" > /var/test.txt

@@ -142,7 +142,6 @@ jobs:
             echo "USERNAME=${{ env.USERNAME }}" >> .env
             echo "PASSWORD=${{ env.PASSWORD }}" >> .env
             echo "DATABASE=${{ env.DATABASE }}" >> .env
-            sudo docker-compose down
-            sudo docker rmi ghcr.io/shreyas-acharya/fastapi:latest
+            sudo docker pull ghcr.io/shreyas-acharya/fastapi:latest
             sudo docker-compose up -d
           '

@@ -137,6 +137,5 @@ jobs:
             IdentityFile ~/.ssh/github-actions-key
             StrictHostKeyChecking no
           END
-          ssh ec2 docker --version
-          ssh ec2 docker-compose --version
-      - run: ssh ec2 docker --version
+      - name: Setup nginx
+        run: ssh ec2 echo "Testing" > test.txt

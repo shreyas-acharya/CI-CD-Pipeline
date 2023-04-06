@@ -137,4 +137,6 @@ jobs:
             IdentityFile ~/.ssh/github-actions-key
             StrictHostKeyChecking no
           END
-      - run: ssh docker -version
+      - run: |
+          ssh docker --version
+          ssh docker-compose --version

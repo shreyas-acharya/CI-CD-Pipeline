@@ -128,12 +128,12 @@ jobs:
           sudo ufw allow 22
       - name: List EC2 Instances
         run: |
-          sleep 20
+          # sleep 20
           aws ec2 describe-instances
       - name: SSH into EC2 Instance
         run: |
-          echo $AWS_PRIVATE_KEY > private_key.pem && chmod 600 private_key.pem
-          ssh -i private_key.pem -o StrictHostKeyChecking=no $AWS_USERNAME@$AWS_HOSTNAME '
+          sudo echo $AWS_PRIVATE_KEY > private_key.pem && sudo chmod 600 private_key.pem
+          sudo ssh -i private_key.pem -o StrictHostKeyChecking=no $AWS_USERNAME@$AWS_HOSTNAME '
             # Setup NGINX
             sudo echo 'server { listen 80; server_name $AWS_PUBLIC_ADDR; location / { proxy_pass http://0.0.0.0:8000;}}' > /etc/nginx/sites-enabled/userapplication_nginx
             sudo service nginx restart

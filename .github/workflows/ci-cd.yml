@@ -138,5 +138,5 @@ jobs:
             StrictHostKeyChecking no
           END
       - run: |
-          ssh docker --version
-          ssh docker-compose --version
+          ssh ec2 docker --version
+          ssh ec2 docker-compose --version

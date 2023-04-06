@@ -110,10 +110,10 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_INSTANCE_ID: ${{ secrets.AWS_INSTANCE_ID }}
-      AWS_USERNAME: ${{ secrets.AWS_USERNAME }}
-      AWS_HOSTNAME: ${{ secrets.AWS_HOSTNAME }}
+      AWS_USERNAME: ${{ vars.AWS_USERNAME }}
+      AWS_HOSTNAME: ${{ vars.AWS_HOSTNAME }}
       AWS_PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
-      AWS_PUBLIC_ADDR: ${{ secrets.AWS_PUBLIC_ADDR}}
+      AWS_PUBLIC_ADDR: ${{ vars.AWS_PUBLIC_ADDR}}
       USERNAME: ${{ secrets.USERNAME }}
       PASSWORD: ${{ secrets.PASSWORD }}
       DATABASE: ${{ secrets.DATABASE }}
@@ -133,7 +133,7 @@ jobs:
       - name: SSH into EC2 Instance
         run: |
           sudo echo $AWS_PRIVATE_KEY > private_key.pem && sudo chmod 600 private_key.pem
-          sudo ssh -i private_key.pem -o StrictHostKeyChecking=no $AWS_USERNAME@$AWS_HOSTNAME '
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $AWS_USERNAME@$AWS_HOSTNAME '
             # Setup NGINX
             sudo echo 'server { listen 80; server_name $AWS_PUBLIC_ADDR; location / { proxy_pass http://0.0.0.0:8000;}}' > /etc/nginx/sites-enabled/userapplication_nginx
             sudo service nginx restart

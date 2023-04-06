@@ -1,6 +1,6 @@
 name: "CI CD Pipeline"
 # on: [push, workflow_dispatch, repository_dispatch]
-on: [workflow_dispatch, repository_dispatch]
+on: [push, workflow_dispatch, repository_dispatch]
 jobs:
   # SAST:
   #   runs-on: ubuntu-latest
@@ -113,30 +113,69 @@ jobs:
       AWS_USERNAME: ${{ secrets.AWS_USERNAME }}
       AWS_HOSTNAME: ${{ secrets.AWS_HOSTNAME }}
       AWS_PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
-      AWS_PUBLIC_ADDR: ${{ secrets.AWS_PUBLIC_ADDR}}
+      AWS_PUBLIC_ADDR: ${{ secrets.AWS_PUBLIC_ADDR }}
       USERNAME: ${{ secrets.USERNAME }}
       PASSWORD: ${{ secrets.PASSWORD }}
       DATABASE: ${{ secrets.DATABASE }}
       VERSION: ${{ vars.VERSION }}
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
     steps:
       - name: Start the EC2 Instance
-        run: aws ec2 start-instances --instance-id $AWS_INSTANCE_ID
+        run: aws ec2 start-instances --instance-id ${{ env.AWS_INSTANCE_ID }}
       - name: List EC2 Instances
         run: |
           # sleep 20
           aws ec2 describe-instances
       - name: SSH into EC2 Instance
         run: |
-          mkdir -p ~/.ssh
-          echo "$AWS_PRIVATE_KEY" > ~/.ssh/github-actions-key
-          chmod 600 ~/.ssh/github-actions-key 
-          cat >>~/.ssh/config <<END
-          Host ec2
-            HostName $AWS_HOSTNAME
-            User $AWS_USERNAME
-            IdentityFile ~/.ssh/github-actions-key
-            StrictHostKeyChecking no
-          END
-      - name: Setup nginx
-        run: 
-          ssh ec2 -t 'echo "Testing" > /var/test.txt'
+          echo "$AWS_PRIVATE_KEY" > private_key
+          chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${{ env.AWS_USERNAME }}@${{ env.AWS_HOSTNAME }} ' 
+            sudo chown ${{ env.AWS_USERNAME }}:${{ env.AWS_USERNAME }} /etc/nginx/sites-enabled/
+            sudo chown ${{ env.AWS_USERNAME }}:${{ env.AWS_USERNAME }} /home/ubuntu
+            sudo echo "server { listen 80; server_name ${{ env.AWS_PUBLIC_ADDR }}; location / {proxy_pass http://0.0.0.0:8000;}}" > /etc/nginx/sites-enabled/userapplication_nginx 
+            sudo service nginx restart
+            export PAT=${{ env.PAT_TOKEN }}
+            echo $PAT | sudo docker login ghcr.io -u USERNAME --password-stdin
+            cd /home/ubuntu/
+            rm /home/ubuntu/.env
+            touch /home/ubuntu/.env
+            echo "VERSION=${{ env.VERSION }}" >> .env
+            echo "USERNAME=${{ env.USERNAME }}" >> .env
+            echo "PASSWORD=${{ env.PASSWORD }}" >> .env
+            echo "DATABASE=${{ env.DATABASE }}" >> .env
+            sudo docker-compose down
+            sudo docker-compose up
+          '
+      # - name: SSH into EC2 Instance
+      #   run: |
+      #     mkdir -p ~/.ssh
+      #     echo "$AWS_PRIVATE_KEY" > ~/.ssh/github-actions-key
+      #     chmod 600 ~/.ssh/github-actions-key 
+      #     cat >>~/.ssh/config <<END
+      #     Host ec2
+      #       HostName $AWS_HOSTNAME
+      #       User $AWS_USERNAME
+      #       IdentityFile ~/.ssh/github-actions-key
+      #       StrictHostKeyChecking no
+      #     END
+      # - name: Setup nginx
+      #   run: |
+      #     ssh -t ec2 'sudo chown "$AWS_USERNAME":"$AWS_USERNAME" /etc/nginx/sites-enabled/'
+      #     ssh -t ec2 'cat >/etc/nginx/sites-enabled/userapplication_nginx <<END
+      #     server {
+      #         listen 80;
+      #         server_name "${AWS_PUBLIC_ADDR}";
+      #         location / {
+      #             proxy_pass http://0.0.0.0:8000;
+      #         }
+      #     }
+      #     END'
+      #     ssh -t ec2 'sudo cat /etc/nginx/sites-enabled/userapplication_nginx'
+      #     ssh -t ec2 'sudo service nginx restart'
+      # - name: Clone docker-compose
+      #   run: |
+      #     ssh -t ec2 'sudo chown $AWS_USERNAME:$AWS_USERNAME /home/'
+      #     ssh -t ec2 'cd /home/ubuntu/'
+      #     ssh -t ec2 'sudo wget https://raw.githubusercontent/shreyas-acharya/UserApplication/HEAD/docker-compose.yml'
+      #     ssh -t ec2 'ls -la'
